@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Button} from './Button';
+import { within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 const meta: Meta<typeof Button> = {
     component: Button, // componente da testare
@@ -25,10 +27,19 @@ export const Disable: Story = {
       disabled: null
     }
   }
-//nuova storia per il bottone 
-//modifica il componente BUtton per supportare la disabilitazione 
-//aggiungere una proprietà per disabilitarlo
-//se la proprietà è null gestire all'onClick prima la disabilitazione 
-//simulare l'operazione del ckick con un setTimeout di 5 secondo
 
-
+export const WithInteraction: Story = {
+    args: {
+        label: 'Click Me',
+        onClick: async () => {
+            alert('Button clicked!');
+            await new Promise((resolve) => setTimeout(resolve, 5000)); // simula un'operazione asincrona di 5 secondi
+            alert('Button re-enabled!');
+        },
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement); // ottiene l'elemento canvas
+        const button = canvas.getByRole("button"); // ottiene il pulsante
+        await userEvent.click(button); // simula il click sul pulsante
+    },
+};
